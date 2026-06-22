@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Niche Finder - Détecteur de niches</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        :root{--primary:#2d5a3d;--secondary:#f4a261;--accent:#e76f51;--light:#f5f7f4;--dark:#24312a;--text:#6b7b70;--white:#fff;--shadow:0 14px 40px rgba(18,31,24,.12);}
+        body{font-family:'Segoe UI',sans-serif;color:var(--dark);background:linear-gradient(180deg,#f9fbf8,#eef3ef);min-height:100vh;}
+        .topbar{position:sticky;top:0;z-index:20;backdrop-filter:blur(14px);background:rgba(255,255,255,.86);border-bottom:1px solid rgba(36,49,42,.08);}
+        .topbar-inner{max-width:1240px;margin:0 auto;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;}
+        .brand{display:flex;align-items:center;gap:.75rem;text-decoration:none;font-size:1.25rem;font-weight:800;color:var(--primary);}
+        .brand-mark{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;color:var(--white);background:linear-gradient(135deg,var(--primary),#4f8b63);box-shadow:0 10px 24px rgba(45,90,61,.24);}
+        .chip{border:none;border-radius:999px;padding:.7rem 1rem;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;transition:transform .2s;}
+        .chip:hover{transform:translateY(-1px);}
+        .chip.secondary{background:#e6eee8;color:var(--dark);}
+        .chip.primary{background:var(--primary);color:var(--white);box-shadow:0 10px 18px rgba(45,90,61,.22);}
+        .page{max-width:1240px;margin:0 auto;padding:2rem;}
+        .hero-card{background:rgba(255,255,255,.92);border:1px solid rgba(45,90,61,.08);box-shadow:var(--shadow);border-radius:24px;padding:2rem;margin-bottom:2rem;position:relative;overflow:hidden;}
+        .hero-card::after{content:'';position:absolute;inset:auto -6% -28% auto;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(244,162,97,.18),transparent 68%);pointer-events:none;}
+        .hero-kicker{display:inline-flex;align-items:center;gap:.5rem;color:var(--secondary);font-weight:800;letter-spacing:.04em;text-transform:uppercase;margin-bottom:.9rem;}
+        .hero-card h1{font-size:clamp(1.8rem,3vw,2.8rem);margin-bottom:.7rem;}
+        .hero-card p{color:var(--text);max-width:70ch;line-height:1.7;}
+        .grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;}
+        .panel{background:rgba(255,255,255,.94);border:1px solid rgba(45,90,61,.08);box-shadow:var(--shadow);border-radius:24px;padding:1.5rem;}
+        .panel h2{font-size:1.2rem;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
+        .form-group{margin-bottom:1rem;}
+        .form-group label{display:block;font-weight:700;margin-bottom:.35rem;font-size:.95rem;}
+        .form-group input,.form-group select,.form-group textarea{width:100%;border:1px solid #d8e1da;background:#fff;border-radius:14px;padding:.85rem 1rem;font:inherit;}
+        .form-group input:focus,.form-group select:focus{outline:2px solid rgba(45,90,61,.18);border-color:var(--primary);}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+        .btn{border:none;border-radius:999px;padding:.9rem 1.15rem;font-weight:800;cursor:pointer;transition:transform .2s;}
+        .btn:hover{transform:translateY(-1px);}
+        .btn.primary{background:var(--primary);color:var(--white);width:100%;}
+        .btn.secondary{background:#e6eee8;color:var(--dark);}
+        .btn.info{background:#d1ecf1;color:#0c5460;}
+        .slider-group{margin-bottom:1rem;}
+        .slider-group label{display:flex;justify-content:space-between;font-weight:700;margin-bottom:.3rem;}
+        .slider-group input[type=range]{width:100%;accent-color:var(--primary);}
+        .niche-item{display:grid;grid-template-columns:1fr auto;gap:1rem;padding:1rem 0;border-bottom:1px solid rgba(45,90,61,.08);align-items:center;}
+        .niche-item:last-child{border-bottom:none;}
+        .niche-name{font-weight:800;font-size:1.05rem;}
+        .niche-meta{color:var(--text);font-size:.9rem;margin-top:.2rem;}
+        .score-badge{display:inline-flex;align-items:center;gap:.3rem;padding:.4rem .8rem;border-radius:999px;font-weight:800;font-size:.9rem;}
+        .score-high{background:#d4edda;color:#155724;}
+        .score-mid{background:#fff3cd;color:#856404;}
+        .score-low{background:#f8d7da;color:#721c24;}
+        .tag{display:inline-block;padding:.2rem .6rem;border-radius:999px;font-size:.8rem;font-weight:700;margin-right:.3rem;background:#e6eee8;color:var(--dark);}
+        .tag.green{background:#d4edda;color:#155724;}
+        .tag.yellow{background:#fff3cd;color:#856404;}
+        .tag.red{background:#f8d7da;color:#721c24;}
+        .empty-state{text-align:center;padding:2rem;color:var(--text);}
+        .analyze-result{background:#eef7f0;border:1px solid rgba(45,90,61,.15);border-radius:14px;padding:.8rem 1rem;margin-bottom:1rem;display:none;}
+        .analyze-result.show{display:block;}
+        .loading{display:inline-block;width:16px;height:16px;border:2px solid var(--primary);border-top-color:transparent;border-radius:50%;animation:spin .6s linear infinite;}
+        @keyframes spin{to{transform:rotate(360deg);}}
+        @media(max-width:960px){.grid{grid-template-columns:1fr;}}
+        @media(max-width:640px){.topbar-inner,.page{padding-left:1rem;padding-right:1rem;}}
+    </style>
+</head>
+<body>
+<header class="topbar">
+    <div class="topbar-inner">
+        <a class="brand" href="start-ici.html">
+            <span class="brand-mark"><i class="fas fa-crosshairs"></i></span>
+            <span>Niche Finder</span>
+        </a>
+        <div class="top-actions">
+            <a class="chip secondary" href="start-ici.html"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a class="chip secondary" href="exemple-app-3euros/calculateur-conges.html"><i class="fas fa-euro-sign"></i> App 3€</a>
+            <a class="chip secondary" href="exemple-app-3euros/gumroad-page.html"><i class="fas fa-shopping-cart"></i> Vendre</a>
+            <button class="chip primary" id="resetBtn"><i class="fas fa-trash"></i> Effacer</button>
+        </div>
+    </div>
+</header>
+
+<main class="page">
+    <div class="hero-card">
+        <div class="hero-kicker"><i class="fas fa-bullseye"></i> Détection de niches</div>
+        <h1>Trouve les niches AVANT la saturation</h1>
+        <p>Analyse automatique + scoring. Ajoute une niche, clique <strong>"Analyser"</strong> pour scraper les données réelles.</p>
+    </div>
+
+    <div class="grid">
+        <div class="panel">
+            <h2><i class="fas fa-plus-circle"></i> Ajouter une niche</h2>
+            <div class="analyze-result" id="analyzeResult">
+                <strong>🤖 Analyse</strong> <div id="analyzeContent"></div>
+            </div>
+            <form id="nicheForm">
+                <div class="form-group" style="display:flex;gap:.5rem;">
+                    <input type="text" id="nicheName" placeholder="ex: Bouquets fleurs séchées" required style="flex:1;">
+                    <button type="button" class="btn info" id="analyzeBtn" style="width:auto;white-space:nowrap;"><i class="fas fa-search"></i> Analyser</button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Plateforme</label>
+                        <select id="platform">
+                            <option value="shopify">Shopify</option>
+                            <option value="appstore">App Store</option>
+                            <option value="playstore">Google Play</option>
+                            <option value="amazon">Amazon</option>
+                            <option value="etsy">Etsy</option>
+                            <option value="web">Web / SaaS</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Concurrents <small style="color:var(--text);">(manuel)</small></label>
+                        <input type="number" id="competitors" min="0" value="20">
+                    </div>
+                </div>
+                <div class="slider-group">
+                    <label><span>Demande</span> <span id="demandVal">5/10</span></label>
+                    <input type="range" id="demand" min="1" max="10" value="5">
+                </div>
+                <div class="slider-group">
+                    <label><span>Concurrence</span> <span id="competitionVal">5/10</span></label>
+                    <input type="range" id="competition" min="1" max="10" value="5">
+                </div>
+                <div class="slider-group">
+                    <label><span>Complexité</span> <span id="complexityVal">5/10</span></label>
+                    <input type="range" id="complexity" min="1" max="10" value="5">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Revenu mensuel (€)</label>
+                        <input type="number" id="revenue" min="0" step="100" value="5000">
+                    </div>
+                    <div class="form-group">
+                        <label>Marge</label>
+                        <select id="margin">
+                            <option value="faible">Faible</option>
+                            <option value="moyenne" selected>Moyenne</option>
+                            <option value="elevee">Elevée</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Temps mise marché</label>
+                    <select id="timeToMarket">
+                        <option value="1-semaine">1 semaine</option>
+                        <option value="1-mois">1 mois</option>
+                        <option value="3-mois" selected>3 mois</option>
+                        <option value="6-mois-plus">6 mois+</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="notes" rows="2" placeholder="Tendance repérée sur..."></textarea>
+                </div>
+                <button class="btn primary" type="submit"><i class="fas fa-plus"></i> Ajouter & scorer</button>
+            </form>
+        </div>
+
+        <div class="panel">
+            <h2><i class="fas fa-trophy"></i> Niches classées</h2>
+            <div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;">
+                <select id="sortSelect" style="flex:1;border:1px solid #d8e1da;border-radius:14px;padding:.6rem 1rem;font:inherit;">
+                    <option value="score-desc">Score ↓</option>
+                    <option value="score">Score ↑</option>
+                    <option value="name">Nom</option>
+                    <option value="date">Date</option>
+                </select>
+                <span id="nicheCount" style="align-self:center;color:var(--text);font-size:.9rem;"></span>
+            </div>
+            <div id="nicheList">
+                <div class="empty-state"><i class="fas fa-inbox" style="font-size:2rem;margin-bottom:.7rem;display:block;"></i>Aucune niche.<br>Ajoute ta première idée !</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel" style="margin-bottom:2rem;">
+        <h2><i class="fas fa-download"></i> Export / Import</h2>
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+            <button class="btn secondary" id="exportBtn"><i class="fas fa-file-export"></i> Export JSON</button>
+            <button class="btn secondary" id="importBtn"><i class="fas fa-file-import"></i> Import JSON</button>
+            <span style="color:var(--text);font-size:.9rem;align-self:center;">Sauvegardé dans le navigateur.</span>
+        </div>
+        <input type="file" id="importFileInput" accept=".json" style="display:none;">
+    </div>
+</main>
+
+<script>
+    const STORAGE_KEY='niche-finder-data';
+    const API_URL=window.location.origin.includes('localhost')?'http://localhost:3001/api':'/api';
+    let niches=[];
+
+    function loadNiches(){try{const d=localStorage.getItem(STORAGE_KEY);niches=d?JSON.parse(d):[];}catch(e){niches=[];}renderNiches();}
+    function saveNiches(){localStorage.setItem(STORAGE_KEY,JSON.stringify(niches));}
+
+    function computeScore(n){
+        const ds=(n.demand/10)*30,cs=(1-n.competition/10)*20,xs=(1-n.complexity/10)*15;
+        let rs=0;
+        if(n.revenue>=10000)rs=15;else if(n.revenue>=5000)rs=11;else if(n.revenue>=2000)rs=7;else if(n.revenue>=1000)rs=4;else rs=1;
+        const mMap={faible:2,moyenne:5,elevee:10},ms=mMap[n.margin||'moyenne']||5;
+        const tMap={'1-semaine':10,'1-mois':7,'3-mois':4,'6-mois-plus':1},ts=tMap[n.timeToMarket||'3-mois']||4;
+        let s=Math.round(ds+cs+xs+rs+ms+ts);
+        const c=n.autoCompetitors!==undefined?n.autoCompetitors:n.competitors;
+        if(c<50)s+=5;if(c<20)s+=5;if(c<10)s+=5;
+        if(n.margin==='elevee')s+=3;if(n.timeToMarket==='1-semaine')s+=3;if(n.timeToMarket==='1-mois')s+=1;
+        return Math.min(s,100);
+    }
+
+    function getScoreLabel(s){if(s>=70)return {class:'score-high',label:'🔥 Prioritaire'};if(s>=45)return {class:'score-mid',label:'👀 A étudier'};return {class:'score-low',label:'⚠️ Risqué'};}
+    function getEffortLabel(c){if(c<=3)return {class:'tag green',label:'Facile'};if(c<=6)return {class:'tag yellow',label:'Moyen'};return {class:'tag red',label:'Complexe'};}
+    function getMarginLabel(m){return{'faible':'💰 Faible','moyenne':'💰💰 Moyenne','elevee':'💰💰💰 Élevée'}[m]||'💰 Moyenne';}
+    function getTTMLabel(t){return{'1-semaine':'⏱️ 1 sem','1-mois':'⏱️ 1 mois','3-mois':'⏱️ 3 mois','6-mois-plus':'⏱️ 6 mois+'}[t]||'⏱️ 3 mois';}
+    function escapeHtml(v){return String(v).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');}
+
+    function renderNiches(){
+        const c=document.getElementById('nicheList'),s=document.getElementById('sortSelect').value;
+        document.getElementById('nicheCount').textContent=niches.length+' niches';
+        if(niches.length===0){c.innerHTML='<div class="empty-state"><i class="fas fa-inbox" style="font-size:2rem;margin-bottom:.7rem;display:block;"></i>Aucune niche.<br>Ajoute ta première idée !</div>';return;}
+        let sorted=[...niches];
+        switch(s){case'score':sorted.sort((a,b)=>a.score-b.score);break;case'score-desc':sorted.sort((a,b)=>b.score-a.score);break;case'name':sorted.sort((a,b)=>a.name.localeCompare(b.name));break;case'date':sorted.sort((a,b)=>new Date(b.date)-new Date(a.date));break;}
+        c.innerHTML=sorted.map(n=>{const si=getScoreLabel(n.score),effort=getEffortLabel(n.complexity),comp=n.autoCompetitors!==undefined?n.autoCompetitors+' (auto)':n.competitors;
+        return '<div class="niche-item"><div><div class="niche-name">'+escapeHtml(n.name)+'<span class="tag">'+escapeHtml(n.platform)+'</span><span class="tag '+(n.margin==='elevee'?'green':n.margin==='faible'?'yellow':'')+'">'+getMarginLabel(n.margin)+'</span><span class="tag">'+getTTMLabel(n.timeToMarket)+'</span></div><div class="niche-meta">'+comp+' concurrents · '+n.revenue.toLocaleString()+'€/mois <span class="'+effort.class+'">'+effort.label+'</span></div>'+(n.notes?'<div class="niche-meta">📝 '+escapeHtml(n.notes)+'</div>':'')+'</div><div style="text-align:right;"><div class="score-badge '+si.class+'">'+n.score+'/100 '+si.label+'</div><button class="chip secondary" style="margin-top:.3rem;padding:.4rem .6rem;font-size:.8rem;" onclick="deleteNiche('+n.id+')"><i class="fas fa-trash"></i></button></div></div>';}).join('');
+    }
+
+    function addNiche(name,platform,competitors,demand,competition,complexity,revenue,notes,margin,timeToMarket,autoCompetitors){
+        const niche={id:Date.now()+Math.floor(Math.random()*1000),name,platform,competitors:parseInt(competitors)||0,autoCompetitors:autoCompetitors!==undefined?parseInt(autoCompetitors):undefined,demand:parseInt(demand),competition:parseInt(competition),complexity:parseInt(complexity),revenue:parseInt(revenue),margin:margin||'moyenne',timeToMarket:timeToMarket||'3-mois',notes,date:new Date().toISOString()};
+        niche.score=computeScore(niche);niches.push(niche);saveNiches();renderNiches();return niche;
+    }
+
+    function deleteNiche(id){if(!confirm('Supprimer ?'))return;niches=niches.filter(n=>n.id!==id);saveNiches();renderNiches();}
+
+    async function analyzeNiche(){
+        const name=document.getElementById('nicheName').value.trim();
+        const platform=document.getElementById('platform').value;
+        const resultDiv=document.getElementById('analyzeResult'),contentDiv=document.getElementById('analyzeContent'),btn=document.getElementById('analyzeBtn');
+        if(!name){alert('Entre un nom.');return;}
+        btn.disabled=true;btn.innerHTML='<span class="loading"></span>...';resultDiv.classList.remove('show');
+        try{const res=await fetch(API_URL+'/niches/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,platform})});const data=await res.json();let html='';
+        if(data.autoCompetitors!==undefined){html+='<p>🔍 <strong>'+data.autoCompetitors.toLocaleString()+'</strong> résultats</p>';document.getElementById('competitors').value=data.autoCompetitors;if(data.suggestedDemand){document.getElementById('demand').value=data.suggestedDemand;document.getElementById('demandVal').textContent=data.suggestedDemand+'/10';}if(data.suggestedCompetition){document.getElementById('competition').value=data.suggestedCompetition;document.getElementById('competitionVal').textContent=data.suggestedCompetition+'/10';}html+='<p style="font-size:.85rem;color:var(--text);">✅ Sliders ajustés.</p>';}else{html='<p>⚠️ Aucun résultat auto.</p>';}
+        contentDiv.innerHTML=html;resultDiv.classList.add('show');}catch(err){contentDiv.innerHTML='<p style="color:var(--accent);">⚠️ Erreur</p>';resultDiv.classList.add('show');}
+        btn.disabled=false;btn.innerHTML='<i class="fas fa-search"></i> Analyser';
+    }
+
+    document.getElementById('nicheForm').addEventListener('submit',e=>{e.preventDefault();const name=document.getElementById('nicheName').value.trim();if(!name)return;
+        addNiche(name,document.getElementById('platform').value,document.getElementById('competitors').value,document.getElementById('demand').value,document.getElementById('competition').value,document.getElementById('complexity').value,document.getElementById('revenue').value,document.getElementById('notes').value.trim(),document.getElementById('margin').value,document.getElementById('timeToMarket').value);
+        document.getElementById('nicheForm').reset();document.getElementById('nicheName').focus();document.getElementById('demandVal').textContent='5/10';document.getElementById('competitionVal').textContent='5/10';document.getElementById('complexityVal').textContent='5/10';document.getElementById('analyzeResult').classList.remove('show');
+    });
+    document.getElementById('analyzeBtn').addEventListener('click',analyzeNiche);
+    document.getElementById('nicheName').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();analyzeNiche();}});
+    ['demand','competition','complexity'].forEach(id=>{document.getElementById(id).addEventListener('input',function(){document.getElementById(id+'Val').textContent=this.value+'/10';});});
+    document.getElementById('sortSelect').addEventListener('change',renderNiches);
+    document.getElementById('resetBtn').addEventListener('click',()=>{if(confirm('Tout effacer ?')){niches=[];saveNiches();renderNiches();}});
+    document.getElementById('exportBtn').addEventListener('click',()=>{const b=new Blob([JSON.stringify(niches,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='niches.json';a.click();URL.revokeObjectURL(u);});
+    document.getElementById('importBtn').addEventListener('click',()=>{document.getElementById('importFileInput').click();});
+    document.getElementById('importFileInput').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(!Array.isArray(d))throw Error();niches=d;saveNiches();renderNiches();alert(d.length+' importées !');}catch(err){alert('Fichier invalide.');}};r.readAsText(f);e.target.value='';});
+    window.deleteNiche=deleteNiche;loadNiches();
+</script>
+</body>
+</html>

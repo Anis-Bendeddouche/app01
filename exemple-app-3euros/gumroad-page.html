@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acheter Calculateur Congés Payés - 3€</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#f7f7f7; min-height:100vh; display:flex; justify-content:center; align-items:center; padding:1rem; }
+        .product-card { max-width:420px; width:100%; background:#fff; border-radius:16px; box-shadow:0 2px 20px rgba(0,0,0,.08); overflow:hidden; }
+        .product-image { width:100%; height:200px; background:linear-gradient(135deg,#667eea,#764ba2); display:flex; align-items:center; justify-content:center; position:relative; }
+        .product-image .mock-content { text-align:center; color:#fff; }
+        .product-image .mock-content .icon { font-size:3rem; }
+        .product-image .mock-content h2 { font-size:1.2rem; margin-top:.3rem; }
+        .product-image .badge { position:absolute; top:1rem; right:1rem; background:#10b981; color:#fff; padding:.3rem .8rem; border-radius:999px; font-size:.8rem; font-weight:700; }
+        .product-body { padding:1.5rem; }
+        .product-body h1 { font-size:1.3rem; color:#1a1a1a; }
+        .product-body .author { font-size:.9rem; color:#888; margin-bottom:.8rem; }
+        .product-body .description { color:#555; font-size:.95rem; line-height:1.6; margin-bottom:1rem; }
+        .features-list { list-style:none; margin-bottom:1.5rem; }
+        .features-list li { padding:.4rem 0; display:flex; align-items:center; gap:.6rem; color:#333; font-size:.9rem; }
+        .features-list li::before { content:'\2713'; color:#10b981; font-weight:700; }
+        .price-section { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.2rem; }
+        .price { font-size:2rem; font-weight:800; color:#1a1a1a; }
+        .price small { font-size:.9rem; font-weight:400; color:#888; }
+        .buy-btn {
+            width:100%; padding:1rem; background:linear-gradient(135deg,#ff90e8,#ff5e5b);
+            color:#fff; border:none; border-radius:999px; font-size:1.1rem; font-weight:800; cursor:pointer;
+            display:flex; align-items:center; justify-content:center; gap:.5rem; transition:transform .15s;
+        }
+        .buy-btn:hover { transform:translateY(-1px); }
+        .gumroad-badge { display:flex; align-items:center; justify-content:center; gap:.3rem; margin-top:1rem; font-size:.75rem; color:#888; }
+        .delivery-section { display:none; margin-top:1rem; padding:1rem; background:#f0fdf4; border-radius:8px; border:1px solid #bbf7d0; }
+        .delivery-section.show { display:block; }
+        .delivery-section h3 { color:#166534; margin-bottom:.3rem; }
+        .delivery-section .code { background:#dcfce7; padding:.4rem .8rem; border-radius:6px; font-family:monospace; font-weight:700; display:inline-block; margin:.5rem 0; }
+        .secure-badge { display:flex; justify-content:center; gap:1rem; margin-top:1rem; padding:.8rem; background:#f9fafb; border-radius:8px; font-size:.8rem; color:#666; }
+        .footer-links { display:flex; justify-content:center; gap:1rem; margin-top:1rem; font-size:.8rem; }
+        .footer-links a { color:#888; text-decoration:none; }
+        .back-link { display:block; text-align:center; margin-top:1rem; color:#4299e1; text-decoration:none; font-size:.9rem; }
+    </style>
+</head>
+<body>
+    <div class="product-card">
+        <div class="product-image">
+            <div class="mock-content">
+                <div class="icon">🧮</div>
+                <h2>Calculateur Congés Payés</h2>
+            </div>
+            <div class="badge">⭐ Nouveau</div>
+        </div>
+        <div class="product-body">
+            <h1>Calculateur Congés Payés</h1>
+            <p class="author">par <strong>Niche Finder</strong></p>
+            <p class="description">Calcule tes jours de congés, simule tes poses, exporte en PDF. L'outil essentiel pour tout salarié français.</p>
+            <ul class="features-list">
+                <li>Calcul automatique jours acquis</li>
+                <li>Simulation par mois</li>
+                <li>Export PDF personnalisé</li>
+                <li>Calendrier visuel</li>
+                <li>Projections congés anticipés</li>
+                <li>Mise à jour gratuite</li>
+            </ul>
+            <div class="price-section">
+                <div>
+                    <div class="price">3,00€ <small>EUR</small></div>
+                </div>
+            </div>
+            <button class="buy-btn" id="buyBtn">🛒 Acheter maintenant</button>
+            <div class="gumroad-badge">🔒 Paiement sécurisé par Gumroad</div>
+
+            <div class="delivery-section" id="deliverySection">
+                <h3>✅ Merci pour ton achat !</h3>
+                <p>Lien d'accès :</p>
+                <div class="code" id="accessLink">calculateur-conges.html</div>
+                <p style="margin-top:.5rem;">🔑 Code : <strong id="unlockCode">NICHE123</strong></p>
+                <a href="calculateur-conges.html" style="display:inline-block;margin-top:.5rem;color:#166534;font-weight:700;">→ Accéder à l'application</a>
+            </div>
+
+            <div class="secure-badge">
+                <span>🔒 Sécurisé</span>
+                <span>🔄 Remboursé</span>
+                <span>📧 Support</span>
+            </div>
+            <div class="footer-links">
+                <a href="#">FAQ</a>
+                <a href="#">Remboursement</a>
+                <a href="mailto:contact@nichefinder.com">Contact</a>
+            </div>
+            <a href="../start-ici.html" class="back-link">← Retour au Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('buyBtn').addEventListener('click', function() {
+            if (confirm('🛒 Simuler un achat de 3€ ?')) {
+                document.getElementById('deliverySection').classList.add('show');
+                this.textContent = '✅ Acheté ! Accès débloqué';
+                this.style.background = 'linear-gradient(135deg,#10b981,#059669)';
+                this.disabled = true;
+                let v = parseInt(localStorage.getItem('calculateur-ventes') || '0');
+                v++; localStorage.setItem('calculateur-ventes', v);
+                setTimeout(() => {
+                    if (confirm('🚀 Accéder à l\'application maintenant ?')) {
+                        window.location.href = 'calculateur-conges.html';
+                    }
+                }, 800);
+            }
+        });
+    </script>
+</body>
+</html>

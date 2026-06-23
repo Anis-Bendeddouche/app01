@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculateur Congés Payés - 3€</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family:'Segoe UI',sans-serif;
+            background:linear-gradient(135deg,#f0f4f8,#e2e8f0);
+            min-height:100vh; display:flex; justify-content:center; align-items:center; padding:1rem;
+        }
+        .card {
+            background:#fff; border-radius:24px; padding:2rem; max-width:520px; width:100%;
+            box-shadow:0 25px 70px rgba(0,0,0,.12); position:relative; overflow:hidden;
+        }
+        .card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:linear-gradient(90deg,#4299e1,#48bb78,#ed8936); }
+        h1 { font-size:1.5rem; color:#1a365d; display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }
+        .badge { display:inline-block; padding:.3rem .8rem; background:linear-gradient(135deg,#48bb78,#38a169); color:#fff; border-radius:999px; font-size:.8rem; font-weight:700; }
+        .sub { color:#718096; font-size:.9rem; margin-bottom:1.5rem; }
+        label { display:block; font-weight:700; margin-bottom:.3rem; font-size:.9rem; color:#2d3748; }
+        input, select { width:100%; padding:.85rem 1rem; border:2px solid #e2e8f0; border-radius:12px; font-size:1rem; margin-bottom:1rem; }
+        input:focus { outline:none; border-color:#4299e1; box-shadow:0 0 0 3px rgba(66,153,225,.15); }
+        .btn { width:100%; padding:1rem; color:#fff; border:none; border-radius:12px; font-size:1.1rem; font-weight:700; cursor:pointer; transition:transform .2s; }
+        .btn:hover { transform:translateY(-2px); }
+        .btn.blue { background:linear-gradient(135deg,#4299e1,#3182ce); }
+        .btn.orange { background:linear-gradient(135deg,#ed8936,#dd6b20); }
+        .btn.green { background:linear-gradient(135deg,#48bb78,#38a169); }
+        .result { display:none; margin-top:1.5rem; padding:1.5rem; background:#ebf8ff; border-radius:12px; border-left:4px solid #4299e1; animation:fadeIn .3s; }
+        .result.show { display:block; }
+        .result .big { font-size:2.5rem; font-weight:800; color:#2b6cb0; margin:.3rem 0; }
+        .pay-section { margin-top:1.5rem; border:2px dashed #e2e8f0; border-radius:16px; padding:1.5rem; text-align:center; }
+        .pay-section.unlocked { border-color:#48bb78; background:#f0fff4; }
+        .pay-section .price { font-size:2rem; font-weight:800; color:#dd6b20; margin:.5rem 0; }
+        .pay-section .features { text-align:left; margin:1rem 0; list-style:none; }
+        .pay-section .features li { padding:.4rem 0; display:flex; align-items:center; gap:.5rem; }
+        .pay-section .features li::before { content:'✅'; }
+        .pay-section .features li.locked::before { content:'🔒'; }
+        .gumroad-btn {
+            display:inline-block; padding:1rem 2rem; background:linear-gradient(135deg,#ff90e8,#ff5e5b);
+            color:#fff; border-radius:999px; text-decoration:none; font-weight:800; border:none; cursor:pointer; width:100%; font-size:1.1rem;
+        }
+        .premium-content { display:none; margin-top:1.5rem; }
+        .premium-content.show { display:block; animation:fadeIn .5s; }
+        .premium-grid { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; margin-bottom:1rem; }
+        .premium-card { padding:1rem; background:#f0fff4; border-radius:12px; border:1px solid #c6f6d5; text-align:center; }
+        .premium-card .icon { font-size:1.5rem; }
+        .premium-card .label { font-weight:700; font-size:.85rem; color:#276749; }
+        .toast { position:fixed; top:20px; right:20px; padding:1rem 1.5rem; border-radius:12px; color:#fff; font-weight:700; z-index:100; animation:slideIn .3s; box-shadow:0 10px 25px rgba(0,0,0,.15); }
+        .toast.success { background:#38a169; }
+        .toast.error { background:#e53e3e; }
+        .toast.info { background:#3182ce; }
+        .footer { margin-top:1.5rem; text-align:center; font-size:.8rem; color:#a0aec0; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes slideIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🧮 Calculateur Congés Payés <span class="badge">3€</span></h1>
+        <p class="sub">Gratuit pour le calcul simple. Version complète 3€ avec export PDF, simulations & calendrier.</p>
+
+        <label>📅 Date d'embauche</label>
+        <input type="date" id="dateEmbauche">
+        <label>💰 Salaire mensuel brut (€)</label>
+        <input type="number" id="salaire" placeholder="2500">
+        <label>📆 Jours déjà pris</label>
+        <input type="number" id="joursPris" placeholder="5">
+        <button class="btn blue" onclick="calculerGratuit()">💶 Calculer mes congés</button>
+
+        <div class="result" id="resultat">
+            <div class="big" id="joursRestants">0 jours</div>
+            <p id="indemnites">Indemnités : <strong>0,00€</strong></p>
+            <p id="conseil" style="color:#718096;font-size:.9rem;"></p>
+        </div>
+
+        <div class="pay-section" id="paySection">
+            <h3 style="margin-bottom:.5rem;">🔓 Débloque toutes les fonctionnalités</h3>
+            <div class="price">3€</div>
+            <p style="color:#718096;font-size:.9rem;margin-bottom:1rem;">Paiement unique, accès à vie.</p>
+            <ul class="features">
+                <li>Calcul gratuit des jours restants</li>
+                <li class="locked">📄 Export PDF</li>
+                <li class="locked">📅 Calendrier visuel</li>
+                <li class="locked">📊 Simulation pose/récupération</li>
+                <li class="locked">📈 Congés anticipés</li>
+                <li class="locked">🔐 Pas de pub</li>
+            </ul>
+            <button class="gumroad-btn" id="gumroadBtn">🛒 Acheter sur Gumroad - 3€</button>
+        </div>
+
+        <div class="premium-content" id="premiumContent">
+            <h3 style="color:#38a169;">✨ Version complète débloquée !</h3>
+            <div class="premium-grid">
+                <div class="premium-card"><div class="icon">📄</div><div class="label">Export PDF</div></div>
+                <div class="premium-card"><div class="icon">📅</div><div class="label">Calendrier</div></div>
+                <div class="premium-card"><div class="icon">📊</div><div class="label">Simulations</div></div>
+                <div class="premium-card"><div class="icon">📈</div><div class="label">Projections</div></div>
+            </div>
+            <label>📅 Mois de simulation</label>
+            <select id="simulationMois">
+                <option value="juillet">Juillet</option>
+                <option value="aout" selected>Août</option>
+                <option value="septembre">Septembre</option>
+                <option value="octobre">Octobre</option>
+                <option value="novembre">Novembre</option>
+                <option value="decembre">Décembre</option>
+            </select>
+            <label>➕ Jours supplémentaires à poser</label>
+            <input type="number" id="joursSimulation" value="3" min="0" max="30">
+            <button class="btn orange" onclick="simulerPremium()">📊 Simuler</button>
+            <div class="result" id="resultatPremium">
+                <div class="big" id="simulationResultat">0 jours</div>
+                <p id="simulationIndemnites"></p>
+            </div>
+            <button class="btn green" onclick="exporterPDF()" style="margin-top:1rem;">📄 Exporter en PDF</button>
+        </div>
+
+        <div class="footer">
+            <a href="../start-ici.html" style="color:#4299e1;">← Dashboard</a> · 
+            <a href="#" style="color:#4299e1;" onclick="simulerAchat()">Déjà acheté ?</a>
+        </div>
+    </div>
+
+    <script>
+        let premiumUnlocked = localStorage.getItem('calculateur-conges-premium') === 'true';
+
+        function calculer(dateEmbauche, salaire, joursPris) {
+            if (!dateEmbauche || !salaire) return null;
+            const debut = new Date(dateEmbauche);
+            const maintenant = new Date();
+            const mois = (maintenant - debut) / (1000 * 60 * 60 * 24 * 30.44);
+            const joursAcquis = Math.min(30, Math.floor(mois * 2.5));
+            const joursRestants = Math.max(0, joursAcquis - (parseInt(joursPris) || 0));
+            const indemnites = (salaire / 26) * joursRestants;
+            return { joursAcquis, joursRestants, indemnites };
+        }
+
+        function afficherConseil(j) {
+            if (j <= 0) return '⚠️ Tu as épuisé tous tes congés. Vérifie les RTT !';
+            if (j < 5) return '💡 Il te reste peu de jours. Essaye de les caser !';
+            if (j < 10) return '💡 Tu as encore ' + j + ' jours. Pense à faire un pont !';
+            if (j < 20) return '💡 Bonne gestion ! Tu as ' + j + ' jours disponibles.';
+            return '💡 Tu as ' + j + ' jours. Pourquoi ne pas planifier un voyage ?';
+        }
+
+        function calculerGratuit() {
+            const dateEmbauche = document.getElementById('dateEmbauche').value;
+            const salaire = parseFloat(document.getElementById('salaire').value);
+            const joursPris = document.getElementById('joursPris').value;
+            if (!dateEmbauche || !salaire) { alert('Remplis la date et le salaire.'); return; }
+            const r = calculer(dateEmbauche, salaire, joursPris);
+            if (!r) return;
+            document.getElementById('joursRestants').textContent = r.joursRestants + ' jours';
+            document.getElementById('indemnites').innerHTML = 'Indemnités : <strong>' + r.indemnites.toFixed(2) + '€</strong>';
+            document.getElementById('conseil').textContent = afficherConseil(r.joursRestants);
+            document.getElementById('resultat').classList.add('show');
+            toast('✅ Calcul effectué !', 'info');
+        }
+
+        function simulerPremium() {
+            if (!premiumUnlocked) { toast('🔒 Achète la version complète d\'abord !', 'error'); return; }
+            const dateEmbauche = document.getElementById('dateEmbauche').value;
+            const salaire = parseFloat(document.getElementById('salaire').value);
+            const joursPris = document.getElementById('joursPris').value;
+            const joursSupp = parseInt(document.getElementById('joursSimulation').value) || 0;
+            const mois = document.getElementById('simulationMois').value;
+            if (!dateEmbauche || !salaire) { toast('Remplis d\'abord le formulaire.', 'error'); return; }
+            const r = calculer(dateEmbauche, salaire, joursPris);
+            if (!r) return;
+            const apres = Math.max(0, r.joursRestants - joursSupp);
+            const indemnitesApres = (salaire / 26) * apres;
+            document.getElementById('simulationResultat').textContent = apres + ' jours restants';
+            document.getElementById('simulationIndemnites').innerHTML = 'Indemnités si tu poses ' + joursSupp + ' jours en ' + mois + ' : <strong>' + indemnitesApres.toFixed(2) + '€</strong>';
+            document.getElementById('resultatPremium').classList.add('show');
+            toast('📊 Simulation effectuée !', 'info');
+        }
+
+        function exporterPDF() {
+            if (!premiumUnlocked) { toast('🔒 Achète la version complète.', 'error'); return; }
+            const dateEmbauche = document.getElementById('dateEmbauche').value;
+            const salaire = parseFloat(document.getElementById('salaire').value);
+            const joursPris = document.getElementById('joursPris').value;
+            const r = calculer(dateEmbauche, salaire, joursPris);
+            if (!r) { toast('Fais d\'abord un calcul.', 'error'); return; }
+            const contenu = '=== CALCULATEUR CONGÉS PAYÉS ===\n\nDate embauche : ' + dateEmbauche + '\nSalaire : ' + salaire + '€\nJours pris : ' + (parseInt(joursPris)||0) + '\n\nJours acquis : ' + r.joursAcquis + '\nJours restants : ' + r.joursRestants + '\nIndemnités : ' + r.indemnites.toFixed(2) + '€\n\nGénéré le ' + new Date().toLocaleDateString('fr-FR');
+            const blob = new Blob([contenu], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = 'mes-conges.txt'; a.click();
+            URL.revokeObjectURL(url);
+            toast('📄 Exporté !', 'success');
+        }
+
+        function simulerAchat() {
+            const code = prompt('🔑 Code de déverrouillage (test: NICHE123) :');
+            if (code === 'NICHE123') { debloquerPremium(); }
+            else if (code) { toast('❌ Code invalide.', 'error'); }
+        }
+
+        function debloquerPremium() {
+            premiumUnlocked = true;
+            document.getElementById('paySection').classList.add('unlocked');
+            document.getElementById('paySection').querySelector('h3').textContent = '✅ Débloqué !';
+            document.getElementById('paySection').querySelector('.price').textContent = '✓ Accès à vie';
+            document.querySelectorAll('.features li.locked').forEach(li => { li.classList.remove('locked'); li.classList.add('unlocked'); });
+            document.getElementById('premiumContent').classList.add('show');
+            document.getElementById('gumroadBtn').textContent = '✅ Déjà acheté';
+            toast('🎉 Version complète débloquée !', 'success');
+            localStorage.setItem('calculateur-conges-premium', 'true');
+            let ventes = parseInt(localStorage.getItem('calculateur-ventes') || '0');
+            ventes++; localStorage.setItem('calculateur-ventes', ventes);
+        }
+
+        if (premiumUnlocked) debloquerPremium();
+
+        document.getElementById('gumroadBtn').addEventListener('click', function(e) {
+            if (!premiumUnlocked) {
+                e.preventDefault();
+                if (confirm('🚀 Simuler un achat de 3€ ?')) { debloquerPremium(); }
+            }
+        });
+
+        function toast(msg, type) {
+            const t = document.createElement('div'); t.className = 'toast ' + (type || 'info'); t.textContent = msg;
+            document.body.appendChild(t); setTimeout(() => t.remove(), 3000);
+        }
+    </script>
+</body>
+</html>

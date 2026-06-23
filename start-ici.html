@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Niche Finder - Business</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family:'Segoe UI',sans-serif;
+            background:linear-gradient(135deg,#f9fbf8 0%,#eef3ef 100%);
+            min-height:100vh; display:flex; align-items:center; justify-content:center;
+            padding:1rem;
+        }
+
+        /* 🛡️ BANDEAU RGPD */
+        .rgpd-banner {
+            position:fixed; bottom:0; left:0; right:0;
+            background:rgba(36,49,42,.95); backdrop-filter:blur(10px);
+            color:#fff; padding:1rem 2rem; z-index:1000;
+            display:none; align-items:center; justify-content:center; gap:1.5rem;
+            flex-wrap:wrap; font-size:.9rem; line-height:1.5;
+        }
+        .rgpd-banner.show { display:flex; }
+        .rgpd-banner a { color:#f4a261; text-decoration:underline; }
+        .rgpd-banner .btn {
+            background:#f4a261; color:#24312a; border:none;
+            padding:.6rem 1.2rem; border-radius:999px; font-weight:700;
+            cursor:pointer; white-space:nowrap; font-size:.9rem;
+        }
+        .rgpd-banner .btn:hover { background:#e8984a; }
+        .rgpd-banner .btn-outline {
+            background:transparent; color:#fff; border:1px solid rgba(255,255,255,.3);
+            padding:.6rem 1.2rem; border-radius:999px; cursor:pointer;
+            white-space:nowrap; font-size:.9rem;
+        }
+        .rgpd-footer {
+            margin-top:1.5rem; text-align:center; color:#a0aec0; font-size:.8rem;
+        }
+        .rgpd-footer a { color:#718096; text-decoration:underline; }
+        .dashboard {
+            max-width:1100px; width:100%;
+        }
+        h1 { font-size:2rem; color:#1a365d; margin-bottom:.3rem; }
+        .sub { color:#718096; margin-bottom:2rem; }
+        .grid {
+            display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+            gap:1.5rem;
+        }
+        .card {
+            background:#fff; border-radius:20px; padding:1.5rem;
+            box-shadow:0 10px 40px rgba(0,0,0,.06);
+            transition:transform .2s, box-shadow .2s;
+            text-decoration:none; color:inherit; display:block;
+            border:1px solid rgba(45,90,61,.06);
+        }
+        .card:hover { transform:translateY(-4px); box-shadow:0 20px 60px rgba(0,0,0,.1); }
+        .card .icon {
+            width:48px; height:48px; border-radius:14px;
+            display:grid; place-items:center; font-size:1.5rem;
+            margin-bottom:1rem;
+        }
+        .card h2 { font-size:1.15rem; margin-bottom:.4rem; }
+        .card p { color:#718096; font-size:.9rem; line-height:1.6; }
+        .card .badge {
+            display:inline-block; padding:.2rem .6rem; border-radius:999px;
+            font-size:.75rem; font-weight:700; margin-top:.5rem;
+        }
+        .badge.green { background:#d4edda; color:#155724; }
+        .badge.yellow { background:#fff3cd; color:#856404; }
+        .badge.red { background:#f8d7da; color:#721c24; }
+        .badge.purple { background:#e9d8fd; color:#6b46c1; }
+        .stats {
+            display:grid; grid-template-columns:repeat(3,1fr); gap:1rem;
+            margin-bottom:2rem;
+        }
+        .stat {
+            background:#fff; border-radius:14px; padding:1rem;
+            text-align:center; border:1px solid rgba(45,90,61,.06);
+        }
+        .stat strong { display:block; font-size:1.5rem; color:#2d5a3d; }
+        .stat span { color:#718096; font-size:.85rem; }
+        .footer { margin-top:2rem; text-align:center; color:#a0aec0; font-size:.8rem; }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <h1>🚀 Niche Finder Business</h1>
+        <p class="sub">Trouve une niche → Crée une app → Vends-la sur Gumroad. Le cycle complet.</p>
+
+        <div class="stats">
+            <div class="stat">
+                <strong id="nichesCount">0</strong>
+                <span>Niches détectées</span>
+            </div>
+            <div class="stat">
+                <strong id="ventesCount">0</strong>
+                <span>Ventes simulées</span>
+            </div>
+            <div class="stat">
+                <strong id="revenuCount">0€</strong>
+                <span>Revenu estimé</span>
+            </div>
+        </div>
+
+        <div class="grid">
+            <a class="card" href="niche-finder.html">
+                <div class="icon" style="background:#e6f7ee;color:#2d5a3d;">🎯</div>
+                <h2>Niche Finder</h2>
+                <p>Détecte et score des niches commerciales avant qu'elles soient saturées. Ajoute, analyse, classe.</p>
+                <span class="badge green">Outil principal</span>
+            </a>
+
+            <a class="card" href="exemple-app-3euros/calculateur-conges.html">
+                <div class="icon" style="background:#ebf4ff;color:#3182ce;">🧮</div>
+                <h2>Calculateur Congés Payés</h2>
+                <p>App créée à partir d'une niche. Version gratuite + version complète à 3€ sur Gumroad.</p>
+                <span class="badge yellow">App à vendre</span>
+            </a>
+
+            <a class="card" href="exemple-app-3euros/gumroad-page.html">
+                <div class="icon" style="background:#fff0f6;color:#d53f8c;">🛒</div>
+                <h2>Page Gumroad 3€</h2>
+                <p>Page de vente complète. Simule l'achat, délivre le code d'accès. Prête à mettre en ligne.</p>
+                <span class="badge purple">Vente</span>
+            </a>
+        </div>
+
+        <div class="rgpd-footer">
+            <a href="/app01/rgpd/politique-confidentialite.html">Politique de confidentialité</a> ·
+            <a href="/app01/rgpd/cgv.html">CGV</a> ·
+            <a href="https://anis-bendeddouche.github.io/app01/"><i class="fab fa-github"></i> GitHub Pages</a> ·
+            &copy; 2026 Niche Finder ·
+            <a href="#" onclick="document.getElementById('rgpd-banner').classList.add('show');return false;">🍪 Gérer mes cookies</a>
+        </div>
+    </div>
+
+    <!-- 🛡️ Bandeau RGPD -->
+    <div class="rgpd-banner" id="rgpd-banner">
+        <span>
+            🍪 Ce site utilise le <strong>localStorage</strong> pour sauvegarder vos niches.
+            Aucune donnée personnelle n'est collectée.
+            <a href="rgpd/politique-confidentialite.html">En savoir plus</a>
+        </span>
+        <button class="btn-outline" onclick="document.getElementById('rgpd-banner').classList.remove('show')">Refuser</button>
+        <button class="btn" onclick="accepterCookies()">Accepter</button>
+    </div>
+
+    <script>
+        // Vérifier si déjà accepté
+        if (!localStorage.getItem('rgpd-consent')) {
+            document.getElementById('rgpd-banner').classList.add('show');
+        }
+
+        function accepterCookies() {
+            localStorage.setItem('rgpd-consent', 'accepted');
+            document.getElementById('rgpd-banner').classList.remove('show');
+        }
+        // Compteurs
+        try {
+            const niches = JSON.parse(localStorage.getItem('niche-finder-data') || '[]');
+            document.getElementById('nichesCount').textContent = niches.length;
+            
+            const ventes = parseInt(localStorage.getItem('calculateur-ventes') || '0');
+            document.getElementById('ventesCount').textContent = ventes;
+            document.getElementById('revenuCount').textContent = (ventes * 3) + '€';
+        } catch(e) {}
+    </script>
+</body>
+</html>
